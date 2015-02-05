@@ -90,34 +90,88 @@ class Customer extends Party
       	parent::__construct(new PartyType($type));
   	}
  
-  	public static function getCustomer($id)
+  	public static function get($id)
   	{
-      	$sql = 'SELECT * FROM parties WHERE id = '.$id;
+      	$sql = 'SELECT * FROM customers WHERE id = '.$id;
 		// Execute the query and return the results
 		$res =  DatabaseHandler::GetRow($sql);
 		return self::initialize($res);
   	}
 
-  	public static function registerCustomer($name, $telephone, $address, $email, $password)
+  	public static function register($name, $telephone, $address, $email, $password)
   	{
       	
-  		$today = new DateTime();
-		$today = $today->format('Y-m-d H:M:s');
+  		$query = self::customerCheck($email);
 
-      	$sql = 'INSERT INTO parties (type, name, telephone, address, email, password, reg_date) VALUES ("RegisteredCustomer",'.$name.'", "'.$telephone.'", "'.$address.'", "'.$email.'", sha1("'.$password.'"), "'.$today.'")';
- 		DatabaseHandler::Execute($sql);
+  		if (empty($query)) {
+  			$today = new DateTime();
+			$today = $today->format('Y-m-d H:M:s');
 
-      	$sql2 = 'SELECT * FROM parties WHERE email = "'.$email.'"';
-		// Execute the query and return the results
-		$res =  DatabaseHandler::GetRow($sql2);
+	      	$sql = 'INSERT INTO customers (type, name, telephone, address, email, password, reg_date) VALUES ("RegisteredCustomer",'.$name.'", "'.$telephone.'", "'.$address.'", "'.$email.'", sha1("'.$password.'"), "'.$today.'")';
+	 		DatabaseHandler::Execute($sql);
+
+	      	$sql2 = 'SELECT * FROM customers WHERE email = "'.$email.'"';
+			// Execute the query and return the results
+			$res =  DatabaseHandler::GetRow($sql2);
+			return self::initialize($res);
+  		}else{
+  			return false;
+  		}
+  		
+  	}
+
+  	public function register($password)
+  	{
+      	
+  		$query = self::customerCheck($email);
+
+  		if (empty($query)) {
+	  		$today = new DateTime();
+			$today = $today->format('Y-m-d H:M:s');
+			//"UPDATE customers SET password = sha1('".$password."') WHERE email = '".$this->email."'";
+	      	$sql = 'INSERT INTO customers (type, name, telephone, address, email, password, reg_date) VALUES ("RegisteredCustomer",'.$this->name.'", "'.$this->telephone.'", "'.$this->address.'", "'.$this->email.'", sha1("'.$password.'"), "'.$today.'")';
+	 		DatabaseHandler::Execute($sql);
+
+	      	$sql2 = 'SELECT * FROM customers WHERE email = "'.$email.'"';
+			// Execute the query and return the results
+			$res =  DatabaseHandler::GetRow($sql2);
+			return self::initialize($res);
+		}else{
+  			return false;
+  		}
+  	}
+
+  	public static function create($name, $telephone, $address, $email)
+  	{
+      	
+  		$party = array(
+		  			"type"=>"UnregisteredCustomer",
+		  			"name"=>$name,
+		  			"telephone"=>$telephone,
+		  			"address"=>$address,
+		  			"email"=>$email
+		  		);
+
 		return self::initialize($res);
   	}
+
+  	public static function customerCheck($email)
+	{
+		// Build SQL query
+		//$sql = 'CALL blog_get_comments_list(:blog_id)';
+		$sql = 'SELECT * FROM customers WHERE email = "'.$email.'"';
+
+		return DatabaseHandler::GetRow($sql);
+	}
 
   	private static function initialize($args)
   	{
      	//parent::__construct();
-     	$customer = new Customer($args['type'])
-     	$customer->id = $args['id'];
+     	$customer = new Customer($args['type']);
+
+     	if ($args['id']) {
+     		$customer->id = $args['id'];
+     	}     	
      	$customer->name = $args['name'];
      	$customer->telephone = $args['telephone'];
       	$customer->address = $args['address'];
@@ -135,7 +189,7 @@ class Customer extends Party
 
 		if ($id) {
 			//initiate global $_SESSION variables
-			return self::getCustomer($id);
+			return self::get($id);
 		}else{
 			return false;
 		}
