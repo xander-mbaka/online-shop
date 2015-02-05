@@ -98,14 +98,14 @@ class Customer extends Party
 		return self::initialize($res);
   	}
 
-  	public static function register($name, $telephone, $address, $email, $password)
+  	public static function registerNew($name, $telephone, $address, $email, $password)
   	{
       	
   		$query = self::customerCheck($email);
 
   		if (empty($query)) {
   			$today = new DateTime();
-			$today = $today->format('Y-m-d H:M:s');
+			$today = $today->format('Y-m-d H:i:s');
 
 	      	$sql = 'INSERT INTO customers (type, name, telephone, address, email, password, reg_date) VALUES ("RegisteredCustomer",'.$name.'", "'.$telephone.'", "'.$address.'", "'.$email.'", sha1("'.$password.'"), "'.$today.'")';
 	 		DatabaseHandler::Execute($sql);
@@ -123,16 +123,16 @@ class Customer extends Party
   	public function register($password)
   	{
       	
-  		$query = self::customerCheck($email);
+  		$query = self::customerCheck($this->email);
 
   		if (empty($query)) {
 	  		$today = new DateTime();
-			$today = $today->format('Y-m-d H:M:s');
+			$today = $today->format('Y-m-d H:i:s');
 			//"UPDATE customers SET password = sha1('".$password."') WHERE email = '".$this->email."'";
-	      	$sql = 'INSERT INTO customers (type, name, telephone, address, email, password, reg_date) VALUES ("RegisteredCustomer",'.$this->name.'", "'.$this->telephone.'", "'.$this->address.'", "'.$this->email.'", sha1("'.$password.'"), "'.$today.'")';
+	      	$sql = 'INSERT INTO customers (type, name, telephone, address, email, password, reg_date) VALUES ("RegisteredCustomer", "'.$this->name.'", "'.$this->telephone.'", "'.$this->address.'", "'.$this->email.'", sha1("'.$password.'"), "'.$today.'")';
 	 		DatabaseHandler::Execute($sql);
 
-	      	$sql2 = 'SELECT * FROM customers WHERE email = "'.$email.'"';
+	      	$sql2 = 'SELECT * FROM customers WHERE email = "'.$this->email.'"';
 			// Execute the query and return the results
 			$res =  DatabaseHandler::GetRow($sql2);
 			return self::initialize($res);
@@ -152,7 +152,7 @@ class Customer extends Party
 		  			"email"=>$email
 		  		);
 
-		return self::initialize($res);
+		return self::initialize($party);
   	}
 
   	public static function customerCheck($email)
@@ -169,7 +169,7 @@ class Customer extends Party
      	//parent::__construct();
      	$customer = new Customer($args['type']);
 
-     	if ($args['id']) {
+     	if (isset($args['id'])) {
      		$customer->id = $args['id'];
      	}     	
      	$customer->name = $args['name'];
@@ -183,7 +183,7 @@ class Customer extends Party
 	{
 		// Build SQL query
 		//$sql = 'CALL blog_get_comments_list(:blog_id)';
-		$sql = 'SELECT id FROM users WHERE email = "'.$email.'" AND password = sha1("'.$password.'")';
+		$sql = 'SELECT id FROM customers WHERE email = "'.$email.'" AND password = sha1("'.$password.'")';
 		// Execute the query and return the results
 		$id = DatabaseHandler::GetOne($sql);
 
@@ -197,10 +197,11 @@ class Customer extends Party
 }
  
 // Create a new object
-$newobj = new Customer('UnregisteredCustomer');
-$newobj2 = new Customer('RegisteredCustomer');
- 
+//$newobj = new Customer('UnregisteredCustomer');
+$newobj3 = Customer::create('Alex Mbaka', '0727596626', 'Apartment 602, Marafique Arcade, Thika', 'alex@qet.co.ke');
+$newobj3->register('password');
+echo $newobj3->name ." ". $newobj3->telephone;
 // Attempt to call a protected method
-echo $newobj->getProperty();
+
  
 ?>
