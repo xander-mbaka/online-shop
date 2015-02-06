@@ -1,8 +1,8 @@
  <?php
+require_once 'SixthDimension.php';
 
 class PartyType extends SixthDimension
 {
- 	public static $types = array();
  	public $name;
  	
  	function __construct($name)
@@ -15,8 +15,8 @@ class PartyType extends SixthDimension
  
 class Party extends SixthDimension
 {
-  	protected $parentAccountabilities = array();
-  	protected $childAccountabilities = array();
+  	public $parentAccountabilities = array();
+  	public $childAccountabilities = array();
   	//protected $type = array();
   	public $type;
   	public $id;

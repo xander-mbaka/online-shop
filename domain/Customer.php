@@ -7,7 +7,7 @@ require_once '../include/config.php';
 require_once DOMAIN_DIR . 'error_handler.php';
 ErrorHandler::SetHandler();
 require_once DOMAIN_DIR . 'database_handler.php';
-
+require_once 'Party.php';
 
 class CustomerProfile
 {
@@ -159,17 +159,17 @@ class Customer extends Party
 		  			"shippingInfo"=>$shippingInfo
 		  		);
 
-		return self::initialize($party);
+		  return self::initialize($party);
   	}
 
   	public static function customerCheck($email)
-	{
-		// Build SQL query
-		//$sql = 'CALL blog_get_comments_list(:blog_id)';
-		$sql = 'SELECT * FROM customers WHERE email = "'.$email.'"';
+  	{
+  		// Build SQL query
+  		//$sql = 'CALL blog_get_comments_list(:blog_id)';
+  		$sql = 'SELECT * FROM customers WHERE email = "'.$email.'"';
 
-		return DatabaseHandler::GetRow($sql);
-	}
+  		return DatabaseHandler::GetRow($sql);
+  	}
 
   	private static function initialize($args)
   	{

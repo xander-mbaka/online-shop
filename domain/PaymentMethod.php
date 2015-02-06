@@ -1,5 +1,7 @@
 <?php
 
+require_once 'FifthDimension.php';
+
 class Protocol extends FifthDimension
 {
 	private $timestamp;
