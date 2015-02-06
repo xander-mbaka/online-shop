@@ -37,15 +37,46 @@ class Party extends SixthDimension
       	return $this->type;
   	}
 
-  	public function friendAddChildAccountability(Accountability $arg)
+  	public function friendAddChildAccountability(Accountability $childAccountability)
   	{
-      	array_push($this->childAccountabilities, $arg);
+      	array_push($this->childAccountabilities, $childAccountability);
   	}
 
-  	public function friendAddParentAccountability(Accountability $arg)
+  	public function friendAddParentAccountability(Accountability $parentAccountability)
   	{
-      	array_push($this->parentAccountabilities, $arg);
+      	array_push($this->parentAccountabilities, $parentAccountability);
   	}
+
+    public function accountableTo(AccountabilityType $accountabilityType = null)
+    {
+        $result = array();
+
+        if ($accountabilityType != null) {
+            foreach ($this->parentAccountabilities as $parentAccountability) {
+                if ($parentAccountability->type() == $accountabilityType) {
+                  array_push($result, $parentAccountability->parent());;
+                }
+            }
+        } else {
+            foreach ($this->parentAccountabilities as $parentAccountability) {
+                array_push($result, $parentAccountability->parent());;
+            }
+        }        
+        return array_unique($result);        
+    }
+
+    public function ancestorsInclude(Party $party, AccountabilityType $accountabilityType)
+    {
+        foreach ($this->accountableTo($accountabilityType)) as $parent) {
+            if ($party == $parent) {
+                return true;
+            } elseif ($parent->ancestorsInclude($party, $accountabilityType)) {
+                return true;
+            }
+
+            return false;
+        }
+    }
 
   	public function __toString()
   	{
@@ -53,9 +84,9 @@ class Party extends SixthDimension
   	}
 
   	function __set($propName, $propValue)
-	{
-		$this->$propName = $propValue;
-	}
+  	{
+  		$this->$propName = $propValue;
+  	}
 
   	public function __destruct()
   	{
