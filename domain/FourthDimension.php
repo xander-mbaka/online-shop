@@ -2,11 +2,11 @@
 
 abstract class FourthDimension
 {
-	/** Defines objects that exist in the 5th dimension
-	* This dimension represents events.
-	* It represents actions, plans and observations which occur according to a predefined protocol.
-	* This dimension represents the Structural/Formal Cause of a thing i.e determined by arrangement, shape, or
-	* appearance of the thing e.g the formal cause of a treatment lies in the prescription
+	/** Defines objects that exist in the 4th dimension
+	* This dimension represents resources.
+	* It records the booking and the using of assets[machines, buildings]: physical, financial and human.
+	* This dimension represents the Material Cause of a thing i.e determined by physical composition of the 
+	* thing e.g the material form of water is H20, and that of an expensive watch is rare elements [platinum, titanium, white gold etc]
 	*/
 }
 
