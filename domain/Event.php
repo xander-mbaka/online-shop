@@ -81,6 +81,15 @@ class Plan extends Action
 	}
 }
 
+class Transaction extends Action
+{
+	
+	function __construct(argument)
+	{
+		# code...
+	}
+}
+
 class Command extends Action
 {
 	

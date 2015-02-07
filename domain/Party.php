@@ -67,7 +67,7 @@ class Party extends SixthDimension
 
     public function ancestorsInclude(Party $party, AccountabilityType $accountabilityType)
     {
-        foreach ($this->accountableTo($accountabilityType)) as $parent) {
+        foreach ($this->accountableTo($accountabilityType) as $parent) {
             if ($party == $parent) {
                 return true;
             } elseif ($parent->ancestorsInclude($party, $accountabilityType)) {
