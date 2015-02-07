@@ -1,16 +1,6 @@
 <?php
 
-require_once 'FifthDimension.php';
-
-class Protocol extends FifthDimension
-{
-	private $timestamp;
-
-	function __construct(argument)
-	{
-		# code...
-	}
-}
+require_once 'Protocol.php';
 
 class PaymentMethod extends Protocol
 {
