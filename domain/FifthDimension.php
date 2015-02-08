@@ -1,6 +1,8 @@
 <?php
 
-abstract class FifthDimension
+require_once 'Universal.php';
+
+abstract class FifthDimension extends Universal
 {
 	/** Defines objects that exist in the 5th dimension
 	* This dimension represents events, its the dimension of change, where evolution occurs. Its the appetitive/vegetative kingdom.

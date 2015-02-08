@@ -1,6 +1,7 @@
 <?php
+require_once 'Universal.php';
 
-abstract class SeventhDimension
+abstract class SeventhDimension extends Universal
 {
 	/** Defines objects that exist in the 7th dimension
 	* These are items that can make promises [accountabilities] and 

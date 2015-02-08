@@ -1,6 +1,7 @@
 <?php
+require_once 'Universal.php';
 
-abstract class FourthDimension
+abstract class FourthDimension extends Universal
 {
 	/** Defines objects that exist in the 4th dimension
 	* This dimension represents resources.
