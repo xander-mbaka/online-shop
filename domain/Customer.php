@@ -215,7 +215,7 @@ class Customer extends Party
 $newobj3 = Customer::create('Alex Mbaka', '0727596626', 'Apartment 602, Marafique Arcade, Thika', 'alex@qet.co.ke', 'Apartment 602, Marafique Arcade, Thika, Between 1800Hrs and 2100Hrs');
 $val = $newobj3->register('password');
 if ($val) {
-	echo json_encode($val);
+	echo json_encode($val->type());
 } else {
 	echo 'Customer already exists. Try update';
 }
