@@ -56,10 +56,9 @@ class CustomerProfile
 	  		$today = new DateTime();
 			$today = $today->format('Y-m-d H:i:s');
 
-			$sqltwo = "UPDATE customers SET subscription_status = 1, subscription_date = '". new DateTime() ."' subscription_expiry = '".$date."' WHERE email = '".$email."'";
-					
-				// Execute the query and return the results
-				return DatabaseHandler::Execute($sqltwo);
+			$sqltwo = "UPDATE customers SET type = $this->email, subscription_date = '". new DateTime() ."' subscription_expiry = '".$date."' WHERE email = '".$email."'";
+			// Execute the query and return the results
+			return DatabaseHandler::Execute($sqltwo);
 			//"UPDATE customers SET password = sha1('".$password."') WHERE email = '".$this->email."'";
 	      	$sql = 'INSERT INTO customers (type, name, telephone, address, email, shippingInfo) VALUES ("UnregisteredCustomer", "'.$this->name.'", "'.$this->telephone.'", "'.$this->address.'", "'.$this->email.'", "'.$this->shippingInfo.'")';
 	 		DatabaseHandler::Execute($sql);

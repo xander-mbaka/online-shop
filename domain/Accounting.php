@@ -1,30 +1,38 @@
  <?php
 require_once 'FourthDimension.php';
+require_once 'Event.php';
 
 class ResourceType extends FourthDimension
 {
- 	public $name;
+ 	public $name; 	
+  	public $standardUnitOfMeasure;
  	
- 	function __construct($name)
+ 	function __construct($name, Unit $unit)
  	{
  		$this->name = $name;
- 		$sql = 'INSERT IGNORE INTO resource_types (name) VALUES ("'.$this->name.'")';
+ 		$this->standardUnitOfMeasure = $unit;
+ 		$sql = 'INSERT IGNORE INTO resource_types (name, units) VALUES ("'.$this->name.'", "'.$this->standardUnitOfMeasure.'")';
  		DatabaseHandler::Execute($sql);
  	}
 }
 
 class ConsumableType extends ResourceType
-{
- 	public $name;
- 	
- 	function __construct($name)
+{ 	
+ 	function __construct($name, Unit $unit)
  	{
- 		parent::__construct($name);
- 		$this->name = $name;
+ 		parent::__construct($name, $unit);
  	}
 }
 
 class AssetType extends ResourceType
+{ 	
+ 	function __construct($name, Unit $unit)
+ 	{
+ 		parent::__construct($name, $unit);
+ 	}
+}
+
+/*class LiabilityType extends ResourceType
 {
  	public $name;
  	
@@ -36,17 +44,50 @@ class AssetType extends ResourceType
 }
 
 
+class EquityType extends ResourceType
+{
+ 	public $name;
+ 	
+ 	function __construct($name)
+ 	{
+ 		parent::__construct($name);
+ 		$this->name = $name;
+ 	}
+}*/
+
+
+class Unit
+{
+	public $unitId;
+	public $name;
+	function __construct($name)
+	{
+		$this->name = $name;
+	}
+}
+
+class Quantity
+{
+	public $amount;
+	public $units;
+	function __construct($amount, $unit)
+	{
+		$this->amount;
+		$this->unit;
+	}
+}
 
  
 class Resource extends FourthDimension
 {
   	public $type;
-  	public $name;
+  	public $amount;
  
-  	public function __construct(ResourceType $type)
+  	public function __construct(ResourceType $type, Quantity $amount)
   	{
      	//array_push($this->type, $type);
      	$this->type = $type;
+     	$this->amount = $amount;
   	}	
 
   	public function type()
@@ -54,9 +95,9 @@ class Resource extends FourthDimension
       	return $this->type;
   	}
 
-  	public function __toString()
+  	public function amount()
   	{
-      	return $this->name;
+      	return $this->amount;
   	}
 
   	function __set($propName, $propValue)
@@ -70,32 +111,17 @@ class Resource extends FourthDimension
   	} 
 }
 
-class ConsumableResource extends Resource
-{
-	
-	function __construct(argument)
-	{
-		# code...
-	}
-}
-
-class TemporalResource extends Resource
-{
-	
-	function __construct(argument)
-	{
-		# code...
-	}
-}
-
 class Account extends FourthDimension
 {
 	public $resourceType;
-	public $resourceEntry = array();
+	public $entries = array();
+	public $balance;//Quantity
+	public $actualBalance;//Quantity
+	public $availableBalance;//Quantity
 
-	function __construct(argument)
+	function __construct(ResourceType $type)
 	{
-		# code...
+		$this->resourceType = $type;
 	}
 
 	function credit(ResourceEntry $resourceEntry)
@@ -109,48 +135,100 @@ class Account extends FourthDimension
 	}
 }
 
-class ResourceEntry
+class AccountEntry extends Action
 {
-	public $quantity;
+	public $eventId;
+  	public $resource;
+	public $whenBooked;
+	public $whenCharged;
 
-	function __construct(Quantity )
+	function __construct($eventId, ResourceType $type, Quantity $amount)
 	{
-		# code...
+		parent::__construct();
+		$this->resource = new Resource($type, $amount)
+		$this->eventId = $eventId;
+		//create database entry
+	},
+
+	public function book()
+	{
+		$timestamp = new DateTime();
+		$this->whenBooked = $timestamp->format('YmdHis');//('Y-m-d H:i:s');
+	}
+
+	public function charge()
+	{
+		$timestamp = new DateTime();
+		if (empty($this->whenBooked)) {
+			$this->whenBooked = $timestamp->format('YmdHis');
+		}
+		
+		$this->whenCharged = $timestamp->format('YmdHis');//('Y-m-d H:i:s');
+	}
+
+	public function bookAndCharge()
+	{
+		$timestamp = new DateTime();
+		$this->whenBooked = $timestamp->format('YmdHis');
+		$this->whenCharged = $timestamp->format('YmdHis');//('Y-m-d H:i:s');
+		//update database
 	}
 }
 
-class ResourceAllocation extends ResourceEntry
+//A resource entry qualifies as a resource allocation
+class ResourceAllocation extends AccountEntry
 {
-  	public $type;
-  	public $name;
  
-  	public function __construct(ResourceType $type)
+  	function __construct($eventId, ResourceType $type, Quantity $amount)
   	{
-     	//array_push($this->type, $type);
-     	$this->type = $type;
-  	}	
-
-  	public function type()
-  	{
-      	return $this->type;
+     	parent::__construct($eventId, $type, $amount);
   	}
 
-  	public function __toString()
-  	{
-      	return $this->name;
-  	}
+	public function use()
+	{
+		$this->charge();
+		//update database
+	}
 
-  	function __set($propName, $propValue)
-  	{
-  		$this->$propName = $propValue;
-  	}
-
-  	public function __destruct()
-  	{
-     	//echo 'The class "', __CLASS__, '" was destroyed.<br />';
-  	} 
+	public function bookAndUse()
+	{
+		$this->bookAndCharge();
+		//update database
+	}
 }
 
+class GeneralResourceAllocation extends ResourceAllocation
+{ 
+  	public function __construct($eventId, ResourceType $type, Quantity $amount)
+  	{
+     	parent::__construct($eventId, $type, $amount);
+  	}
+}
 
+class SpecificResourceAllocation extends ResourceAllocation
+{
+  	public $name;//unique identifier e.g serial number
+ 
+  	public function __construct($eventId, ResourceType $type, Quantity $amount)
+  	{
+     	parent::__construct($eventId, $type, $amount);
+  	}
+}
+
+class ConsumableResourceAllocation extends SpecificResourceAllocation
+{
+  	public function __construct($eventId, ResourceType $type, Quantity $amount)
+  	{
+     	parent::__construct($eventId, $type, $amount);
+  	}
+}
+
+class TemporalResourceAllocation extends SpecificResourceAllocation
+{
+  	public function __construct($eventId, ResourceType $type, Quantity $amount)
+  	{
+     	parent::__construct($eventId, $type, $amount);
+  	}
+}
 
 ?>

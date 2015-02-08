@@ -4,11 +4,41 @@ require_once 'FifthDimension.php';
 
 class Event extends FifthDimension
 {
-	
-	function __construct(argument)
+	public $eventId;
+	public $whenRecorded;
+
+	function __construct($eventId)
 	{
-		# code...
+		if (empty($eventId)) {			
+			$timestamp = new DateTime();
+			$this->whenRecorded = $timestamp->format('YmdHis');
+			$this->eventId = substr(md5(microtime()),rand(0,26),5).'-'.$timestamp->format('YmdHis');//or autoincrement
+		}
+
 	}
+
+	public static function getEventById($eventId){
+		$sql2 = 'SELECT * FROM events WHERE id = "'.$eventId.'"';
+		// Execute the query and return the results
+		$res =  DatabaseHandler::GetRow($sql2);
+
+		return self::initialize($res);
+	}
+
+	private static function initialize($args)
+  	{
+     	$event = new Event($args['id']);
+
+      	foreach($args as $key=>$value){
+			$event->$key = $value;
+		}
+      	return $event;
+  	}
+
+  	function __set($propName, $propValue)
+  	{
+  		$this->$propName = $propValue;
+  	}
 }
 
 /**
@@ -65,9 +95,9 @@ class Believing extends MentalEvent
 class Action extends Event
 {
 	
-	function __construct(argument)
+	function __construct()
 	{
-		# code...
+		parent::__construct();
 	}
 }
 
