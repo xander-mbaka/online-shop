@@ -46,13 +46,17 @@ class ProductType extends ConsumableType
     public $salesPrice;
     public $status;
     public $description;
+    public $display;
+    public $variety; // array() -- color, material, options of the same type
+    public $category;
 
     function __construct($name, Unit $unit)
     {
         parent::__construct($name, $unit);
     }
 
-    public static function getProductType($name) {
+    public static function getProductType($name) 
+    {
 
     }
 }
@@ -92,11 +96,6 @@ class ProductTransfer extends Transaction
 
 class Inventory extends StockAccount
 {
-    //public $resourceType;
-    //public $unit;/
-    //public $balance;//Quantity
-    //public $actualBalance;//Quantity
-    //public $availableBalance;//Quantity
     public $alertBalance;
   
     //should this account contain both stock balance and a monetary equivalent?

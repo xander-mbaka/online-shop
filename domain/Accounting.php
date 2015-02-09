@@ -282,11 +282,11 @@ class Transaction extends Action
 
 class Account extends FourthDimension
 {
-	public $accountName;
 	public $accountNumber;
+	public $accountName;
 	public $resourceType;
 	public $unit;
-	public $entries = array();
+	//public $entries = array();
 	public $balance;//Quantity
 	public $actualBalance;//Quantity
 	public $availableBalance;//Quantity
