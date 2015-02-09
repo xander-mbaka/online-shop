@@ -10,7 +10,7 @@ require_once DOMAIN_DIR . 'database_handler.php';
 require_once 'Party.php';
 
 class CustomerProfile
-{
+{// CustomerAccount extends Account
 	private $name;
 	private $address;
 	private $telephone;
@@ -89,7 +89,7 @@ class CustomerProfile
  
 class Customer extends Party
 {
-
+  	public $shippingInfo;
   	public function __construct($type)
   	{
       	parent::__construct(new PartyType($type));

@@ -834,7 +834,7 @@ class Catalog
   }
 }
 
-require_once 'Event.php';
+require_once 'Accounting.php';
 
 class TransactionType extends Protocol
 {

@@ -15,7 +15,8 @@ class PartyType extends SixthDimension
  
 class Party extends SixthDimension
 {
-  	public $parentAccountabilities = array();
+  	
+    public $parentAccountabilities = array();
   	public $childAccountabilities = array();
   	//protected $type = array();
   	public $type;
@@ -24,7 +25,8 @@ class Party extends SixthDimension
   	public $telephone;
   	public $email;
   	public $address;
-  	public $shippingInfo;
+
+    public $accounts = array();
  
   	public function __construct(PartyType $type)
   	{

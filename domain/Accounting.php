@@ -254,7 +254,7 @@ class TransactionType extends Protocol
 class Transaction extends Action
 {
 	public $transactionId;
-	public $transactionType;// Protocol/PaymentMethod/Transaction Type/Posting Rules	
+	public $transactionType;// defines: Protocol/PaymentMethod/Transaction Type/Posting Rules	$this->transactionType->protocol
 	public $sourceAccount;
 	public $destinationAccount;
 	public $resourceType;
@@ -282,6 +282,8 @@ class Transaction extends Action
 
 class Account extends FourthDimension
 {
+	public $accountName;
+	public $accountNumber;
 	public $resourceType;
 	public $unit;
 	public $entries = array();
@@ -289,29 +291,60 @@ class Account extends FourthDimension
 	public $actualBalance;//Quantity
 	public $availableBalance;//Quantity
 
-	function __construct(ResourceType $type, Unit $unit)
+	function __construct($name, ResourceType $type, Unit $unit)
 	{
+		$this->accountName;
 		$this->resourceType = $type;
 		$this->unit = $unit;
+		//add to accounts/journals ledger
+		//retrieve generated account number
 	}
 
-	function credit(ResourceEntry $resourceEntry)
+	public function initializeBalance(Quantity $balance)
 	{
-		# code...
+	    $this->balance = $balance->amount;
+	    //update with accountNumber as key;
 	}
 
-	function debit(ResourceEntry $resourceEntry)
+	private function updateBalance()
 	{
-		# code...
+	    //update with accountNumber as key;
+	}
+
+	private function credit(ResourceEntry $resourceEntry)
+	{
+		$this->balance = intval($this->balance) + intval(($resourceEntry->resource)->amount);
+        $this->updateBalance();
+	}
+
+	private function debit(ResourceEntry $resourceEntry)
+	{
+		$this->balance = intval($this->balance) - intval(($resourceEntry->resource)->amount);
+        $this->updateBalance();
+	}
+
+	public function getHistory($limit = 5)
+	{
+	    $this->balance = $balance->amount;
+	    //update with accountNumber as key;
 	}
 }
 
-//Inventory
+//Inventory - consumables, stock, customer
 class HoldingAccount extends Account
 {
-	function __construct(ConsumableType $type, Unit $unit)
+	function __construct($name, ConsumableType $type, Unit $unit)
 	{
-		parent::__construct($type, $unit)
+		parent::__construct($name, $type, $unit)
+	}
+
+}
+
+class StockAccount extends HoldingAccount
+{
+	function __construct($name, ConsumableType $type, Unit $unit)
+	{
+		parent::__construct($name, $type, $unit)
 	}
 
 }
@@ -319,9 +352,9 @@ class HoldingAccount extends Account
 //Fixed/Temporal Assets - furniture, machines, buildings, employees.
 class AssetAccount extends Account
 {
-	function __construct(AssetType $type, Unit $unit)
+	function __construct($name, AssetType $type, Unit $unit)
 	{
-		parent::__construct($type, $unit)
+		parent::__construct($name, $type, $unit)
 	}
 
 }
