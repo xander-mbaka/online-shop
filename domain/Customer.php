@@ -90,6 +90,8 @@ class CustomerProfile
 class Customer extends Party
 {
   	public $shippingInfo;
+  	public $accountNumber;
+  	//public $stockAccountNumber;
   	public function __construct($type)
   	{
       	parent::__construct(new PartyType($type));

@@ -5,13 +5,78 @@ require_once 'Accounting.php';
 /**
 * 
 */
+class Resource extends FourthDimension
+{
+    public $type;
+    public $quantity;
+ 
+    public function __construct(ResourceType $type, Quantity $quantity)
+    {
+        //array_push($this->type, $type);
+        $this->type = $type;
+        $this->quantity = $quantity;
+    }   
+
+    public function type()
+    {
+        return $this->type;
+    }
+
+    public function amount()
+    {
+        return $this->amount;
+    }
+
+    function __set($propName, $propValue)
+    {
+        $this->$propName = $propValue;
+    }
+
+    public function __destruct()
+    {
+        //echo 'The class "', __CLASS__, '" was destroyed.<br />';
+    } 
+}
+
+class ProductType extends ConsumableType
+{   
+    
+    public $productId;
+    public $purchasePrice;
+    public $salesPrice;
+    public $status;
+    public $description;
+
+    function __construct($name, Unit $unit)
+    {
+        parent::__construct($name, $unit);
+    }
+
+    public static function getProductType($name) {
+
+    }
+}
+
+class ProductItem extends Resource
+{
+    
+    public $batchNumber;
+    public $serialNumber;
+ 
+    public function __construct(ProductType $type, Quantity $quantity)
+    {
+        parent::__construct($type, $quantity);
+    }   
+
+}
 
 class ProductEntry extends ConsumableResourceAllocation
 {//5th dimension
   
-  public function __construct($eventId, Inventory $account, ConsumableType $type, Quantity $quantity)
+  public function __construct($eventId, Inventory $account, ProductItem $item)
     {
-      parent::__construct($eventId, $account, $type, $quantity);
+        $item = new ProductItem()
+        parent::__construct($eventId, $account, $item);
     }
 }
 
@@ -27,24 +92,43 @@ class ProductTransfer extends Transaction
 
 class Inventory extends StockAccount
 {
-  //public $resourceType;
-  //public $unit;/
-  //public $balance;//Quantity
-  //public $actualBalance;//Quantity
-  //public $availableBalance;//Quantity
+    //public $resourceType;
+    //public $unit;/
+    //public $balance;//Quantity
+    //public $actualBalance;//Quantity
+    //public $availableBalance;//Quantity
+    public $alertBalance;
   
-    function __construct($name, ConsumableType $type, Unit $unit)
+    //should this account contain both stock balance and a monetary equivalent?
+    //should provide link to receipt or invoice/delivery
+
+    function __construct($name, ProductType $type, Unit $unit)
     {
         parent::__construct($name, $type, $unit)
     }
 
     public function receivePurchasedGoods(Supplier $supplier, ProductEntry $entry)
     {
+        //refactor to Transaction: [Transaction Type - Receive Purchased Goods]
+        //affectes a 2 financial accounts [accounts payable/purchases and supplier account] and this holding account
         $this->decreaseStock($entry)
     }
 
+    public function receiveReturnedGoods(Party $party, ProductEntry $entry)
+    {//party: customer or sales agent
+        //refactor to Transaction: [Transaction Type - Receive Returned Goods]
+        //affectes a 2 financial accounts [accounts receivable/sales and customer account] 
+        //and 2 holding accounts [this and goods issued account]
+
+        $customerAccount = self::getAccount($customer->stockAccountNumber);
+        $this->increaseStock($entry);
+        $purchasesAccount->decreaseSales($entry);
+    }
+
     public function issueGoods(Party $party, ProductEntry $entry)
-    {// may be employee, department, branch etc
+    {// may be employee, customer, department, branch etc
+        //refactor to Transaction: [Transaction Type - Receive Returned Goods]
+        //affectes a 2 holding accounts [this and customer account] and this holding account
         if ($this->verifyAvailability($entry)) {
             $this->decreaseStock($entry);
         }    

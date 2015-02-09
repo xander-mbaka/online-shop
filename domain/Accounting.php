@@ -293,11 +293,11 @@ class Account extends FourthDimension
 
 	function __construct($name, ResourceType $type, Unit $unit)
 	{
-		$this->accountName;
+		$this->accountName = $name;
 		$this->resourceType = $type;
 		$this->unit = $unit;
 		//add to accounts/journals ledger
-		//retrieve generated account number
+		//retrieve generated account number - using what key?
 	}
 
 	public function initializeBalance(Quantity $balance)
@@ -456,10 +456,10 @@ class AccountEntry extends Action
 	public $whenBooked;
 	public $whenCharged;
 
-	function __construct($eventId, Account $account, EntryType $entryType, ResourceType $type, Quantity $quantity)
+	function __construct($eventId, Account $account, EntryType $entryType, Resource $item)
 	{
 		parent::__construct();
-		$this->resource = new Resource($type, $quantity)
+		$this->resource = $item;
 		$this->eventId = $eventId;
 		$this->accountNumber = $account->$accountNumber;
 		//create database entry
@@ -494,9 +494,9 @@ class AccountEntry extends Action
 class ResourceAllocation extends AccountEntry
 {
  
-  	function __construct($eventId, Account $account, ResourceType $type, Quantity $quantity)
+  	function __construct($eventId, Account $account, Resource $item)
   	{
-     	parent::__construct($eventId, $account, $type, $quantity);
+     	parent::__construct($eventId, $account, $item);
   	}
 
 	public function use()
@@ -514,9 +514,9 @@ class ResourceAllocation extends AccountEntry
 
 class GeneralResourceAllocation extends ResourceAllocation
 { 
-  	public function __construct($eventId, Account $account, ResourceType $type, Quantity $quantity)
+  	public function __construct($eventId, Account $account, Resource $item)
   	{
-     	parent::__construct($eventId, $account, $type, $quantity);
+     	parent::__construct($eventId, $account, $item);
   	}
 }
 
@@ -524,9 +524,9 @@ class SpecificResourceAllocation extends ResourceAllocation
 {
   	public $name;//unique identifier e.g serial number or name of person
 
-  	public function __construct($eventId, Account $account, ResourceType $type, Quantity $quantity)
+  	public function __construct($eventId, Account $account, Resource $item)
   	{
-     	parent::__construct($eventId, $account, $type, $quantity);
+     	parent::__construct($eventId, $account, $item);
   	}
 }
 
@@ -534,7 +534,7 @@ class ConsumableResourceAllocation extends SpecificResourceAllocation
 {
   	public function __construct($eventId, Account $account, ConsumableType $type, Quantity $quantity)
   	{
-     	parent::__construct($eventId, $account, $type, $quantity);
+     	parent::__construct($eventId, $account, $item);
   	}
 }
 
@@ -592,7 +592,7 @@ class TemporalResourceAllocation extends SpecificResourceAllocation
 
   	public function __construct($eventId, $account, AssetType $type, Quantity $quantity)
   	{
-     	parent::__construct($eventId, $account, $type, $quantity);
+     	parent::__construct($eventId, $account, $item);
   	}
 
   	public function bookResource(TimePoint $startTime, TimePoint $endTime)
