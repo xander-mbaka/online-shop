@@ -1,33 +1,27 @@
 <?php
 
-require_once 'Protocol.php';
-require_once 'Event.php';
 
-class PaymentMethod extends Protocol
+require_once 'Accounting.php';
+
+
+class FinancialTransaction extends Transaction
 {
-	
-	function __construct(argument)
+	function __construct(Account $source, Account $destination, TransactionType $ttype, Money $amount, $description)
 	{
-		parent::__construct();
+		$rtype = new ConsumableResourceType('Money', );
+		parent::__construct($source, $destination, $ttype, $rtype, $amount, $description);
+		$this->transactionId = 'TX-'.$this->eventId;
+		$this->sourceAccount = $source;
+		$this->destinationAccount = $destination;
 	}
 
-	public static function create($paymentMethod)
+	public function commit()
 	{
 
-	}
-
-	public function verifyPreconditions()
-	{
-		
-	}
-
-	public function makePayment()
-	{
-		
 	}
 }
 
-class Payment extends Transaction
+class Payment extends FinancialTransaction
 {
 	
 	function __construct(argument)

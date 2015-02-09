@@ -5,22 +5,25 @@ require_once 'FifthDimension.php';
 class Event extends FifthDimension
 {
 	public $eventId;
-	public $whenRecorded;
+	public $timestamp;
 
 	function __construct($eventId)
 	{
 		if (empty($eventId)) {			
 			$timestamp = new DateTime();
-			$this->whenRecorded = $timestamp->format('YmdHis');
+			$this->timestamp = $timestamp->format('YmdHis');
 			$this->eventId = substr(md5(microtime()),rand(0,26),5).'-'.$timestamp->format('YmdHis');//or autoincrement
+		}else{
+			$this->eventId = $eventId;
+			$this->load();
 		}
 
 	}
 
 	public static function getEventById($eventId){
-		$sql2 = 'SELECT * FROM events WHERE id = "'.$eventId.'"';
+		$sql = 'SELECT * FROM events WHERE id = "'.$eventId.'"';
 		// Execute the query and return the results
-		$res =  DatabaseHandler::GetRow($sql2);
+		$res =  DatabaseHandler::GetRow($sql);
 
 		return self::initialize($res);
 	}
@@ -33,6 +36,16 @@ class Event extends FifthDimension
 			$event->$key = $value;
 		}
       	return $event;
+  	}
+
+  	private function load()
+  	{	
+  		$sql = 'SELECT * FROM events WHERE id = "'.$this->eventId.'"';
+		// Execute the query and return the results
+		$res =  DatabaseHandler::GetRow($sql);
+     	foreach($res as $key=>$value){
+			$this->$key = $value;
+		}
   	}
 
   	function __set($propName, $propValue)
@@ -111,14 +124,6 @@ class Plan extends Action
 	}
 }
 
-class Transaction extends Action
-{
-	
-	function __construct(argument)
-	{
-		# code...
-	}
-}
 
 class Command extends Action
 {

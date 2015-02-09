@@ -1,6 +1,6 @@
  <?php
 require_once 'FourthDimension.php';
-
+require_once 'Protocol.php';
 require_once 'Event.php';
 
 class ResourceType extends FourthDimension
@@ -56,6 +56,43 @@ class EquityType extends ResourceType
  	}
 }*/
 
+class ConvertionRatio
+{	
+	public $name;
+	public $number;
+	public $fromUnit;
+	public $toUnit;
+	public static $cache;
+
+	function __construct(Unit $fromUnit, Unit $toUnit, $ratio)
+	{
+		$this->name = $name;
+		$this->number = $ratio;
+		$this->fromUnit = $fromUnit;
+		$this->toUnit = $toUnit;
+	}
+
+	public function create()
+	{
+
+	}
+
+	public function update()
+	{
+
+	}
+
+	public function delete()
+	{
+
+	}
+
+	public static function clearRegistry()
+
+	public static function getConversionRatio($name)
+
+	public static function initialize($args)
+}
 
 class Unit
 {
@@ -64,8 +101,10 @@ class Unit
 	public $symbol;
 	public $name;
 	public $isSIUnit = false;//boolean
+	public static $cache;
 
 	//e.g new Unit('Time', 'Seconds', 's'), new Unit('Time', 'Minutes', 'm') ... etc.
+	//e.g new Unit('Items', 'Integer', '') ... etc.
 	function __construct($phenomena, $name, $symbol)
 	{
 		$this->phenomena = $phenomena;
@@ -78,11 +117,45 @@ class Unit
 		$this->isSIUnit = true;
 	}
 
-	public static function getUnitByName()
+	public function save()
+	{
+		
+	}
+
+	public function convertTo($name)
+	{
+		var $phenomena = self::getUnitByName($name);
+		if ($this->phenomena != $phenomena->phenomena) {
+			return false; //Error: Cannot convert between different phenomena
+		} else {
+			# code...
+		}
+		
+	}
+
+	public static function getUnitByName($name)
 
 	public static function getUnitByPhenomena()
 
 	public static function getUnitBySIUnit()
+
+	public static function initialize($args)
+}
+
+
+class Currency extends Unit
+{
+	
+	function __construct($name, $symbol)
+	{
+		parent::__construct('Money', $name, $symbol);
+	}
+
+	public static function getCurrencyBySymbol($symbol)
+	{
+
+	}
+
 }
 
 class Quantity
@@ -107,6 +180,17 @@ class Quantity
 	}
 }
 
+class Money extends Quantity
+{
+	
+	function __construct($amount, Currency $currency)
+	{
+		parent::__construct($amount, $currency);
+	}
+}
+
+//$timeQty = new Quantity($timeInSeconds, Unit.getUnitByName('seconds'));
+//$timeQty2 = new Quantity($timeInMinutes, Unit.getUnitByName('seconds'));
  
 class Resource extends FourthDimension
 {
@@ -140,6 +224,61 @@ class Resource extends FourthDimension
      	//echo 'The class "', __CLASS__, '" was destroyed.<br />';
   	} 
 }
+
+class TransactionType extends Protocol
+{
+	public $postingRule;// - associated proposed action [source = destination inc. fees]
+	public $sourceAccountTypes;
+	public $destinationAccountTypes;
+	function __construct()
+	{
+		parent::__construct();
+	}
+
+	public static function create($paymentMethod)
+	{
+
+	}
+
+	public function verifyPreconditions()
+	{
+		
+	}
+
+	public function makePayment()
+	{
+		
+	}
+}
+
+class Transaction extends Action
+{
+	public $transactionId;
+	public $transactionType;// Protocol/PaymentMethod/Transaction Type/Posting Rules	
+	public $sourceAccount;
+	public $destinationAccount;
+	public $resourceType;
+	public $amount;
+	public $description;
+
+	function __construct(Account $source, Account $destination, TransactionType $ttype, ResourceType $rtype, Quantity $quantity, $description)
+	{
+		parent::__construct();
+		$this->transactionId = 'TX-'.$this->eventId;
+		$this->transactionType = $ttype;
+		$this->sourceAccount = $source;
+		$this->destinationAccount = $destination;		
+		$this->resourceType = $rtype;
+		$this->amount = $quantity;
+		$this->description = $description;
+	}
+
+	public function commit()
+	{
+
+	}
+}
+
 
 class Account extends FourthDimension
 {
@@ -284,11 +423,12 @@ class AccountEntry extends Action
 	public $whenBooked;
 	public $whenCharged;
 
-	function __construct($eventId, EntryType $entryType, ResourceType $type, Quantity $quantity)
+	function __construct($eventId, Account $account, EntryType $entryType, ResourceType $type, Quantity $quantity)
 	{
 		parent::__construct();
 		$this->resource = new Resource($type, $quantity)
 		$this->eventId = $eventId;
+		$this->accountNumber = $account->$accountNumber;
 		//create database entry
 	},
 
@@ -321,9 +461,9 @@ class AccountEntry extends Action
 class ResourceAllocation extends AccountEntry
 {
  
-  	function __construct($eventId, ResourceType $type, Quantity $quantity)
+  	function __construct($eventId, Account $account, ResourceType $type, Quantity $quantity)
   	{
-     	parent::__construct($eventId, $type, $quantity);
+     	parent::__construct($eventId, $account, $type, $quantity);
   	}
 
 	public function use()
@@ -341,9 +481,9 @@ class ResourceAllocation extends AccountEntry
 
 class GeneralResourceAllocation extends ResourceAllocation
 { 
-  	public function __construct($eventId, ResourceType $type, Quantity $quantity)
+  	public function __construct($eventId, Account $account, ResourceType $type, Quantity $quantity)
   	{
-     	parent::__construct($eventId, $type, $quantity);
+     	parent::__construct($eventId, $account, $type, $quantity);
   	}
 }
 
@@ -351,17 +491,17 @@ class SpecificResourceAllocation extends ResourceAllocation
 {
   	public $name;//unique identifier e.g serial number or name of person
 
-  	public function __construct($eventId, ResourceType $type, Quantity $quantity)
+  	public function __construct($eventId, Account $account, ResourceType $type, Quantity $quantity)
   	{
-     	parent::__construct($eventId, $type, $quantity);
+     	parent::__construct($eventId, $account, $type, $quantity);
   	}
 }
 
 class ConsumableResourceAllocation extends SpecificResourceAllocation
 {
-  	public function __construct($eventId, ConsumableType $type, Quantity $quantity)
+  	public function __construct($eventId, Account $account, ConsumableType $type, Quantity $quantity)
   	{
-     	parent::__construct($eventId, $type, $quantity);
+     	parent::__construct($eventId, $account, $type, $quantity);
   	}
 }
 
@@ -417,9 +557,9 @@ class TemporalResourceAllocation extends SpecificResourceAllocation
 {
   	public $timePeriod;//Time record - specific
 
-  	public function __construct($eventId, AssetType $type, Quantity $quantity)
+  	public function __construct($eventId, $account, AssetType $type, Quantity $quantity)
   	{
-     	parent::__construct($eventId, $type, $quantity);
+     	parent::__construct($eventId, $account, $type, $quantity);
   	}
 
   	public function bookResource(TimePoint $startTime, TimePoint $endTime)
