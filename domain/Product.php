@@ -2,76 +2,64 @@
 
 require_once 'Accounting.php';
 
-/**
-* 
-*/
-class Resource extends FourthDimension
-{
-    public $type;
-    public $quantity;
- 
-    public function __construct(ResourceType $type, Quantity $quantity)
-    {
-        //array_push($this->type, $type);
-        $this->type = $type;
-        $this->quantity = $quantity;
-    }   
-
-    public function type()
-    {
-        return $this->type;
-    }
-
-    public function amount()
-    {
-        return $this->amount;
-    }
-
-    function __set($propName, $propValue)
-    {
-        $this->$propName = $propValue;
-    }
-
-    public function __destruct()
-    {
-        //echo 'The class "', __CLASS__, '" was destroyed.<br />';
-    } 
-}
-
 class ProductType extends ConsumableType
 {   
-    
-    public $productId;
     public $purchasePrice;
     public $salesPrice;
     public $status;
     public $description;
     public $display;
-    public $variety; // array() -- color, material, options of the same type
+    public $features; // array() -- color, material, options of the same type
+    // [featureId, {featureName, [{key, value}*]}*]
     public $category;
+    public $taxCode;
+    public $manufacturer;
 
-    function __construct($name, Unit $unit)
+
+    function __construct($typeName, Unit $unit)
     {
-        parent::__construct($name, $unit);
+        parent::__construct($typeName, $unit);
     }
 
     public static function getProductType($name) 
     {
 
     }
+
 }
 
 class ProductItem extends Resource
 {
     
+    public $itemId; //serial number
     public $batchNumber;
     public $serialNumber;
+    public $features = array();
  
     public function __construct(ProductType $type, Quantity $quantity)
     {
         parent::__construct($type, $quantity);
-    }   
+    }
 
+    public function addFeature($name, $key, $value)
+    {
+        //name - key => value
+        //image - 'blue' => blue_watch.jpg
+        //appearance - strap => 'leather'
+        //appearance - color => 'red' => ''
+        $party = array($key=>$value);
+        $this->features[$name][count($this->features)] = $value;
+
+    }
+
+    public function getFeature($key)
+    {
+        $this->features[$key] = $value;
+    }
+
+    public function save(){
+
+    }
 }
 
 class ProductEntry extends ConsumableResourceAllocation
@@ -79,31 +67,65 @@ class ProductEntry extends ConsumableResourceAllocation
   
   public function __construct($eventId, Inventory $account, ProductItem $item)
     {
-        $item = new ProductItem()
+        //$item = new ProductItem();
         parent::__construct($eventId, $account, $item);
+    }
+}
+
+class TransactionType extends Protocol
+{
+    public $txCode;
+    public $postingRule;// - associated proposed action [source = destination inc. fees]
+    public $sourceAccountTypes;
+    public $destinationAccountTypes;
+
+    function __construct()
+    {
+        parent::__construct();
+    }
+
+    public static function create($paymentMethod)
+    {
+
+    }
+
+    public function verifyPreconditions()
+    {
+        
+    }
+
+    public function makePayment()
+    {
+        
     }
 }
 
 class ProductTransfer extends Transaction
 {//5th dimension composite of account entries
-  
-  public function __construct(Inventory $sourceAcc, Inventory $destinationAcc, TransactionType $ttype, ResourceType $rtype, Quantity $quantity, $description)
+    public function __construct(Inventory $sourceAcc, Inventory $destinationAcc, TransactionType $ttype, ResourceType $rtype, Quantity $quantity, $description)
     {
       parent::__construct($sourceAcc, $destinationAcc, $ttype, $rtype, $quantity, $description);
       //e.g supplier account, warehouse account, 'Goods Received Inwards', Samsung Fridge BF-X450, 14 items, 'delivery from supplier xxxx'
+    }
+
+    public function createEntry($account)
+    {
+        $item = new ProductItem($this->resourceType, $this->amount);
+        return new ProductEntry($this->transactionId, $account, $item);
     }
 }
 
 class Inventory extends StockAccount
 {
+    //An inventory links a product type with 
     public $alertBalance;
   
     //should this account contain both stock balance and a monetary equivalent?
     //should provide link to receipt or invoice/delivery
 
-    function __construct($name, ProductType $type, Unit $unit)
+    function __construct(ProductType $type, Unit $unit)
     {
-        parent::__construct($name, $type, $unit)
+        parent::__construct($type->type.'Account', $type, $unit)
     }
 
     public function receivePurchasedGoods(Supplier $supplier, ProductEntry $entry)

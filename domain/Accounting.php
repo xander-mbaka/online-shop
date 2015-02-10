@@ -5,14 +5,15 @@ require_once 'Event.php';
 
 class ResourceType extends FourthDimension
 {
- 	public $name; 	
+ 	public $typeId; //db autoincrement
+ 	public $type; 	
   	public $standardUnitOfMeasure;
  	
- 	function __construct($name, Unit $unit)
+ 	function __construct($typeName, Unit $unit)
  	{
- 		$this->name = $name;
+ 		$this->type = $typeName;
  		$this->standardUnitOfMeasure = $unit;
- 		$sql = 'INSERT IGNORE INTO resource_types (name, units) VALUES ("'.$this->name.'", "'.$this->standardUnitOfMeasure.'")';
+ 		$sql = 'INSERT IGNORE INTO resource_types (type, units) VALUES ("'.$this->type.'", "'.$this->standardUnitOfMeasure.'")';
  		DatabaseHandler::Execute($sql);
  	}
 }
@@ -279,23 +280,38 @@ class Transaction extends Action
 	}
 }
 
+/**
+* 
+*/
+class AccountType extends FourthDimension
+{
+	public $accountCode;
+	public $resourceType;
+	public $unit;
+
+	function __construct(ResourceType $type, Unit $unit)
+	{
+		$this->resourceType = $type;
+		$this->unit = $unit;
+		//add to accounts/journals ledger
+		//retrieve generated account number - using what key?
+	}
+}
 
 class Account extends FourthDimension
 {
 	public $accountNumber;
 	public $accountName;
-	public $resourceType;
-	public $unit;
+	public $accountType;
 	//public $entries = array();
 	public $balance;//Quantity
 	public $actualBalance;//Quantity
 	public $availableBalance;//Quantity
 
-	function __construct($name, ResourceType $type, Unit $unit)
+	function __construct($name, AccountType $type)
 	{
 		$this->accountName = $name;
-		$this->resourceType = $type;
-		$this->unit = $unit;
+		$this->accountType = $type;
 		//add to accounts/journals ledger
 		//retrieve generated account number - using what key?
 	}
@@ -335,7 +351,8 @@ class HoldingAccount extends Account
 {
 	function __construct($name, ConsumableType $type, Unit $unit)
 	{
-		parent::__construct($name, $type, $unit)
+		$actype = new AccountType($type, $unit);
+		parent::__construct($name, $actype);
 	}
 
 }
@@ -344,7 +361,8 @@ class StockAccount extends HoldingAccount
 {
 	function __construct($name, ConsumableType $type, Unit $unit)
 	{
-		parent::__construct($name, $type, $unit)
+		$actype = new AccountType($type, $unit);
+		parent::__construct($name, $actype);
 	}
 
 }
@@ -354,7 +372,8 @@ class AssetAccount extends Account
 {
 	function __construct($name, AssetType $type, Unit $unit)
 	{
-		parent::__construct($name, $type, $unit)
+		$actype = new AccountType($type, $unit);
+		parent::__construct($name, $actype);
 	}
 
 }

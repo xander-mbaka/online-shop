@@ -1,7 +1,7 @@
 <?php
 // Business tier class for reading product catalog information
 
-class Catalog
+class CatalogX
 {
   // Defines product display options
   public static $mProductDisplayOptions = array ('Default',       // 0
@@ -836,11 +836,10 @@ class Catalog
 
 require_once 'Accounting.php';
 
-class TransactionType extends Protocol
+class Catalog
 {
-  public $postingRule;// - associated proposed action [source = destination inc. fees]
-  public $sourceAccounts;
-  public $destinationAccounts;
+  public static $totalProductTypes;
+  
   function __construct()
   {
     parent::__construct();
