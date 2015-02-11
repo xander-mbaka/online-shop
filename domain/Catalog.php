@@ -836,10 +836,11 @@ class CatalogX
 
 require_once 'Accounting.php';
 
+
 class Catalog
 {
   public static $totalProductTypes;
-  
+
   function __construct()
   {
     parent::__construct();
@@ -851,6 +852,11 @@ class Catalog
   }
 
   public function verifyPreconditions()
+  {
+    
+  }
+
+  public function makePayment()
   {
     
   }

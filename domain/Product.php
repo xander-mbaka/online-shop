@@ -4,16 +4,19 @@ require_once 'Accounting.php';
 
 class ProductType extends ConsumableType
 {   
-    public $purchasePrice;
+    public $costPrice;
     public $salesPrice;
     public $status;
     public $description;
     public $display;
-    public $features; // array() -- color, material, options of the same type
-    // [featureId, {featureName, [{key, value}*]}*]
+    public $attributeTypes; // array() -- color, material, options of the same type
+    // [attributeId, {attributeType, [{attributeName, value}*]}*]
     public $category;
     public $taxCode;
     public $manufacturer;
+    public $make;
+    public $model;
+    public $packageContents; //array() to string/ strexplode/ json object
 
 
     function __construct($typeName, Unit $unit)
@@ -43,10 +46,14 @@ class ProductItem extends Resource
 
     public function addFeature($name, $key, $value)
     {
+        //check if is in the list of allowable features
         //name - key => value
         //image - 'blue' => blue_watch.jpg
         //appearance - strap => 'leather'
-        //appearance - color => 'red' => ''
+        //appearance - color => 'red'
+        //
+
+        //???????
         $party = array($key=>$value);
         $this->features[$name][count($this->features)] = $value;
 
