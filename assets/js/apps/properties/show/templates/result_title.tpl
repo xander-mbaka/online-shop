@@ -1,0 +1,1 @@
+<span>Properties:</span><br><%= count %> Properties Found

@@ -9,9 +9,11 @@ class ProductType extends ConsumableType
     public $status;
     public $description;
     public $display;
+    public $mainImage;
     public $attributeTypes; // array() -- color, material, options of the same type
     // [attributeId, {attributeType, [{attributeName, value}*]}*]
-    public $category;
+    //public $category; watches/mens watches/mechanical watches -- phones/business phones/qwerty phone
+    //all these are categories a product can fall into
     public $taxCode;
     public $manufacturer;
     public $make;
