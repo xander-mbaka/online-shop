@@ -23,7 +23,7 @@ define(["app_admin", "tpl!apps/admin/journals/show/templates/lightbox.tpl"], fun
         require(["apps/admin/entities/lightning"], function(){
           $.when(LightningAbstracts.request("admin:entities")).done(function(content){
             if(content !== undefined){
-              API.listAdministrators(content, 0);
+              API.listAdministrators(content, 0); 
             }
           });
         });
