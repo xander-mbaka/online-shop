@@ -931,7 +931,7 @@ h5.ititle{
     background-color: #f4f6fb;
     border: 1px solid #aeb0b5;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-left: calc(50% - 200px);
+    margin-left: calc(50% - 150px);
     margin-top: 30px;
     position: relative;
     width: 400px;
@@ -951,7 +951,7 @@ h5.ititle{
     background-color: #f4f6fb;
     border: 1px solid #aeb0b5;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-left: calc(50% - 200px);
+    margin-left: calc(50% - 150px);
     margin-top: 30px;
     position: relative;
     width: 400px;
@@ -1741,7 +1741,7 @@ textarea.lab-textarea {
     left: calc(50% - 100px);
     margin: 20px 10px 10px ;
     position: relative;
-    width:200px;
+    width:150px;
 }
 
 
@@ -1860,6 +1860,7 @@ textarea.lab-textarea {
     margin-bottom: 20px;
     position: relative;
     width: calc(100% - 20px);
+    background-color: #f4f6fb;
 }
 
 .table img {
@@ -2158,7 +2159,7 @@ textarea.lab-textarea {
     height: 250px;
     width: 400px;
     top: calc(50% - 125px);
-    left: calc(50% - 200px);
+    left: calc(50% - 150px);
     background-color: #fff;
 }
 
@@ -2566,12 +2567,12 @@ input.setup-img-input {
 }
 
 #main-region {
-    height: calc(100% - 110px);
+    height: calc(100% - 100px);
     overflow-y: scroll;
     position: fixed;
     right: 10px;
     top: 50px;
-    width: calc(100% - 230px);
+    width: calc(100% - 180px);
 }
 
 
@@ -2750,10 +2751,6 @@ input.setup-img-input {
         width: calc(100% - 60px);
     }
 
-    .archives-region, .preferences-region {
-        top: 80px;
-    }
-
     .arch-sidebar, .prefs-sidebar {
         width: 90%;
         position: relative;
@@ -2783,9 +2780,13 @@ input.setup-img-input {
 
 
     .arch-head .labForm-group {
-        width: 100%;
+        width: calc(100% - 10px);
         float: none;
         margin: 5px;
+    }
+
+    .table {
+        top: 50px;
     }
 
     .arch-head .labForm-group:last-child {
@@ -2807,10 +2808,6 @@ input.setup-img-input {
     .arch-head input.lab-input {
         width: 78%;
         left: 21%;
-    }
-    .archives {
-        width: 90%;
-        left: 5%;
     }
 
     .jsubsec {

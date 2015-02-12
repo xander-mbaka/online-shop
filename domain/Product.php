@@ -6,9 +6,10 @@ class ProductType extends ConsumableType
 {   
     public $costPrice;
     public $salesPrice;
+    public $discounteedPrice;
     public $status;
     public $description;
-    public $display;
+    public $display;//category/ department/ both/ none
     public $mainImage;
     public $attributeTypes; // array() -- color, material, options of the same type
     // [attributeId, {attributeType, [{attributeName, value}*]}*]
@@ -21,12 +22,23 @@ class ProductType extends ConsumableType
     public $packageContents; //array() to string/ strexplode/ json object
 
 
-    function __construct($typeName, Unit $unit)
+    function __construct($typeName)
     {
+        $unit = new Item();
         parent::__construct($typeName, $unit);
     }
 
-    public static function getProductType($name) 
+    public static function create(ProductType $type, Unit $unit)
+    {
+        
+    }
+
+    public static function getProductByName($name) 
+    {
+
+    }
+
+    public static function getProductById($id) 
     {
 
     }
@@ -53,9 +65,6 @@ class ProductItem extends Resource
         //image - 'blue' => blue_watch.jpg
         //appearance - strap => 'leather'
         //appearance - color => 'red'
-        //
-
-        //???????
         $party = array($key=>$value);
         $this->features[$name][count($this->features)] = $value;
 
@@ -137,6 +146,11 @@ class Inventory extends StockAccount
         parent::__construct($type->type.'Account', $type, $unit)
     }
 
+    public static function create(ProductType $type, Unit $unit)
+    {
+
+    }
+
     public function receivePurchasedGoods(Supplier $supplier, ProductEntry $entry)
     {
         //refactor to Transaction: [Transaction Type - Receive Purchased Goods]
@@ -182,4 +196,9 @@ class Inventory extends StockAccount
         $this->updateBalance();
     }
 }
+
+
+
+
+//sales account/accounts receivable - sales channel feature
 ?>

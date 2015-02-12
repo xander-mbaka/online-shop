@@ -13,7 +13,7 @@ class ResourceType extends FourthDimension
  	{
  		$this->type = $typeName;
  		$this->standardUnitOfMeasure = $unit;
- 		$sql = 'INSERT IGNORE INTO resource_types (type, units) VALUES ("'.$this->type.'", "'.$this->standardUnitOfMeasure.'")';
+ 		$sql = 'INSERT IGNORE INTO resource_types (type, units) VALUES ("'.$this->type.'", "'.$this->standardUnitOfMeasure->name.'")';
  		DatabaseHandler::Execute($sql);
  	}
 }
@@ -135,6 +135,16 @@ class Unit
 	}
 
 	public static function getUnitByName($name)
+	{
+
+	}
+
+	public static function create($phenomena, $name, $symbol)
+	{
+		$sql = 'INSERT IGNORE INTO units (name, phenomena, symbol) VALUES ("'.$name.'", "'.$phenomena.'", "'.$symbol.'")';
+ 		DatabaseHandler::Execute($sql);
+		return new Unit($phenomena, $name, $symbol);
+	}
 
 	public static function getUnitByPhenomena()
 
@@ -157,6 +167,14 @@ class Currency extends Unit
 
 	}
 
+}
+
+class Thing extends Unit
+{	
+	function __construct()
+	{
+		parent::__construct('Individual', 'Number', '');
+	}
 }
 
 class Quantity
@@ -187,6 +205,15 @@ class Money extends Quantity
 	function __construct($amount, Currency $currency)
 	{
 		parent::__construct($amount, $currency);
+	}
+}
+
+class Individual extends Quantity
+{
+	
+	function __construct($amount, Thing $Unit)
+	{
+		parent::__construct($amount, $unit);
 	}
 }
 
