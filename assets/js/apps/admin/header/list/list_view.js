@@ -1,5 +1,5 @@
 define(["app_admin", "tpl!apps/admin/header/list/templates/list.tpl", "tpl!apps/admin/header/list/templates/list_item.tpl", 
-  "tpl!apps/admin/header/list/templates/nav.tpl", "tpl!apps/admin/header/list/templates/top.tpl",  "modnav", "dlmenu"],
+  "tpl!apps/admin/header/list/templates/nav2.tpl", "tpl!apps/admin/header/list/templates/top.tpl",  "modnav", "dlmenu"],
         function(LightningAbstracts, listTpl, listItemTpl, navTpl, topTpl){
   LightningAbstracts.module('HeaderApp.List.View', function(View, LightningAbstracts, Backbone, Marionette, $, _){
     View.Header = Marionette.ItemView.extend({
