@@ -7,13 +7,13 @@ class ResourceType extends FourthDimension
 {
  	public $typeId; //db autoincrement
  	public $type; 	
-  	public $standardUnitOfMeasure;
+  	public $unitOfMeasure;
  	
  	function __construct($typeName, Unit $unit)
  	{
  		$this->type = $typeName;
- 		$this->standardUnitOfMeasure = $unit;
- 		$sql = 'INSERT IGNORE INTO resource_types (type, units) VALUES ("'.$this->type.'", "'.$this->standardUnitOfMeasure->name.'")';
+ 		$this->unitOfMeasure = $unit;
+ 		$sql = 'INSERT IGNORE INTO resource_types (type, units) VALUES ("'.$this->type.'", "'.$this->unitOfMeasure->name.'")';
  		DatabaseHandler::Execute($sql);
  	}
 }
@@ -329,7 +329,7 @@ class Account extends FourthDimension
 {
 	public $accountNumber;
 	public $accountName;
-	public $accountType;
+	public $accountCode;
 	//public $entries = array();
 	public $balance;//Quantity
 	public $actualBalance;//Quantity

@@ -535,3 +535,7 @@
 	$response->init();
 	echo json_encode($response->mJournals);*/
 ?>
+
+Implement:
+1. Separate Account Type from Account
+2. Separate Product Type from Product >>>>> DONE?
