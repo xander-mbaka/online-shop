@@ -5,7 +5,8 @@ require_once 'FifthDimension.php';
 class Event extends FifthDimension
 {
 	public $eventId;
-	public $timestamp;
+	public $timestamp;// whenNoticed/whenRecorded
+	public $whenOccured;
 
 	function __construct($eventId)
 	{

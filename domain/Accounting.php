@@ -326,7 +326,7 @@ class AccountType extends FourthDimension
 }
 
 
-//check out: Financial accounts by M. Fowlwr
+//check out: Financial accounts by M. Fowler
 class Account extends FourthDimension
 {
 	public $accountNumber;
