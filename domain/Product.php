@@ -21,7 +21,6 @@ class ProductType extends ConsumableType
     public $model;
     public $packageContents; //array() to string/ strexplode/ json object
 
-
     function __construct($typeName)
     {
         $unit = new Item();
